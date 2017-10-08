@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Cartalyst\Stripe\Stripe;
 
 class PaymentController extends Controller
 {
@@ -23,7 +24,18 @@ class PaymentController extends Controller
      */
     public function create()
     {
-        //
+      $this->validate(request(), [
+        'amount' => ['required', 'integer', 'min:1']
+      ]);
+
+      $stripe = Stripe::make(config('services.stripe.secret'), config('services.stripe.stripe_api_version'));
+
+      $charge = $stripe->charges()->create([
+        'currency' => 'USD',
+        'amount'   => request('amount'),
+      ]);
+
+      echo $charge['id'];
     }
 
     /**

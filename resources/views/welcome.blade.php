@@ -72,7 +72,7 @@
                         <a href="{{ url('/home') }}">Home</a>
                         <a href="{{ route('payment.index') }}">Payment</a>
                     @else
-                        <a href="{{ route('payment.index') }}">Payment</a>
+                        
                         <a href="{{ route('login') }}">Login</a>
                         <a href="{{ route('register') }}">Register</a>
                     @endauth
