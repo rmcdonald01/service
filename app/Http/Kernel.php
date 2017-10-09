@@ -56,6 +56,10 @@ class Kernel extends HttpKernel
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'admin' => \Illuminate\Routing\Middleware\AbortIfNotAdmin::class,
+        'needs.marketplace' => \App\Http\Middleware\RedirectIfMarketplaceNotConnected::class,
+        'has.marketplace' => \App\Http\Middleware\RedirectIfMarketplaceConnected::class,
     ];
 }

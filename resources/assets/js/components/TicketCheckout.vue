@@ -4,19 +4,14 @@
             <div class="col col-xs-6">
                 <div class="form-group m-xs-b-4">
                     <label class="form-label">
-                        Price
+                        Amount
                     </label>
-                    <span class="form-control-static">
-                        ${{ priceInDollars }}
-                    </span>
+                    <input v-model="amount" class="form-control">
                 </div>
             </div>
             <div class="col col-xs-6">
                 <div class="form-group m-xs-b-4">
-                    <label class="form-label">
-                        Amount
-                    </label>
-                    <input v-model="amount" class="form-control">
+                  
                 </div>
             </div>
         </div>
@@ -36,8 +31,9 @@
     export default {
         props: [
             'price',
-            'concertTitle',
+            'serviceTitle',
             'concertId',
+            'sellerStripeKey',
         ],
         data() {
             return {
@@ -48,10 +44,10 @@
         },
         computed: {
             description() {
-                if (this.quantity > 1) {
-                    return `${this.quantity} tickets to ${this.concertTitle}`
-                }
-                return `One ticket to ${this.concertTitle}`
+                // if (this.quantity > 1) {
+                //     return `${this.quantity} tickets to ${this.concertTitle}`
+                // }
+                return `${this.serviceTitle}`
             },
             totalPrice() {
                 return this.quantity * this.price
@@ -62,11 +58,14 @@
             totalPriceInDollars() {
                 return (this.totalPrice / 100).toFixed(2)
             },
+            amountInCents() {
+              return this.amount * 100;
+            },
         },
         methods: {
             initStripe() {
                 const handler = StripeCheckout.configure({
-                    key: App.stripePublicKey
+                    key: App.stripeSellerPublicKey
                 })
 
                 window.addEventListener('popstate', () => {
@@ -84,31 +83,20 @@
                     panelLabel: 'Pay ' + this.amount,
                     amount: this.totalPrice,
                     image: '/img/checkout-icon.png',
-                    token: this.purchaseTickets,
+                    token: this.makePayment,
                 })
-            },
-            purchaseTickets(token) {
-                this.processing = true
 
-                axios.post(`/concerts/${this.concertId}/orders`, {
-                    email: token.email,
-                    ticket_quantity: this.quantity,
-                    payment_token: token.id,
-                }).then(response => {
-                    window.location = `/orders/${response.data.confirmation_number}`
-                }).catch(response => {
-                    this.processing = false
-                })
+
             },
             makePayment(token) {
                 this.processing = true
 
-                axios.post(`/concerts/${this.concertId}/orders`, {
+                axios.post(`/payment`, {
                     email: token.email,
-                    ticket_quantity: this.quantity,
+                    amount: this.amountInCents,
                     payment_token: token.id,
                 }).then(response => {
-                    window.location = `/orders/${response.data.confirmation_number}`
+                   window.location = `/payment`
                 }).catch(response => {
                     this.processing = false
                 })

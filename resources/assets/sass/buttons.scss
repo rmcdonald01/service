@@ -1,0 +1,26 @@
+$button-border-radius: $border-radius;
+$btn-disabled-bg: $color-gray-lighter;
+$btn-disabled-border: $color-gray;
+$btn-disabled-text: $btn-disabled-border;
+
+
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+    &:after {
+        position: absolute !important;
+        display: block;
+        height: 1rem;
+        width: 1rem;
+        top: 50%;
+        left: 50%;
+        margin-left: -0.5rem;
+        margin-top: -0.5rem;
+        border: 2px solid $text-dark;
+        border-radius: 0.5rem;
+        border-right-color: transparent;
+        border-top-color: transparent;
+        animation: adjust-hue-around 500ms infinite linear;
+        content: "";
+    }
+}

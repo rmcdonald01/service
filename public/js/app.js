@@ -42194,14 +42194,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['price', 'concertTitle', 'concertId'],
+    props: ['price', 'serviceTitle', 'concertId', 'sellerStripeKey'],
     data: function data() {
         return {
             amount: null,
@@ -42212,10 +42207,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     computed: {
         description: function description() {
-            if (this.quantity > 1) {
-                return this.quantity + ' tickets to ' + this.concertTitle;
-            }
-            return 'One ticket to ' + this.concertTitle;
+            // if (this.quantity > 1) {
+            //     return `${this.quantity} tickets to ${this.concertTitle}`
+            // }
+            return '' + this.serviceTitle;
         },
         totalPrice: function totalPrice() {
             return this.quantity * this.price;
@@ -42225,12 +42220,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         totalPriceInDollars: function totalPriceInDollars() {
             return (this.totalPrice / 100).toFixed(2);
+        },
+        amountInCents: function amountInCents() {
+            return this.amount * 100;
         }
     },
     methods: {
         initStripe: function initStripe() {
             var handler = StripeCheckout.configure({
-                key: App.stripePublicKey
+                key: App.stripeSellerPublicKey
             });
 
             window.addEventListener('popstate', function () {
@@ -42248,37 +42246,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 panelLabel: 'Pay ' + this.amount,
                 amount: this.totalPrice,
                 image: '/img/checkout-icon.png',
-                token: this.purchaseTickets
+                token: this.makePayment
             });
         },
-        purchaseTickets: function purchaseTickets(token) {
+        makePayment: function makePayment(token) {
             var _this = this;
 
             this.processing = true;
 
-            axios.post('/concerts/' + this.concertId + '/orders', {
+            axios.post('/payment', {
                 email: token.email,
-                ticket_quantity: this.quantity,
+                amount: this.amountInCents,
                 payment_token: token.id
             }).then(function (response) {
-                window.location = '/orders/' + response.data.confirmation_number;
+                window.location = '/payment';
             }).catch(function (response) {
                 _this.processing = false;
-            });
-        },
-        makePayment: function makePayment(token) {
-            var _this2 = this;
-
-            this.processing = true;
-
-            axios.post('/concerts/' + this.concertId + '/orders', {
-                email: token.email,
-                ticket_quantity: this.quantity,
-                payment_token: token.id
-            }).then(function (response) {
-                window.location = '/orders/' + response.data.confirmation_number;
-            }).catch(function (response) {
-                _this2.processing = false;
             });
         }
     },
@@ -42297,22 +42280,6 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", [
     _c("div", { staticClass: "row middle-xs" }, [
-      _c("div", { staticClass: "col col-xs-6" }, [
-        _c("div", { staticClass: "form-group m-xs-b-4" }, [
-          _c("label", { staticClass: "form-label" }, [
-            _vm._v("\n                    Price\n                ")
-          ]),
-          _vm._v(" "),
-          _c("span", { staticClass: "form-control-static" }, [
-            _vm._v(
-              "\n                    $" +
-                _vm._s(_vm.priceInDollars) +
-                "\n                "
-            )
-          ])
-        ])
-      ]),
-      _vm._v(" "),
       _c("div", { staticClass: "col col-xs-6" }, [
         _c("div", { staticClass: "form-group m-xs-b-4" }, [
           _c("label", { staticClass: "form-label" }, [
@@ -42340,7 +42307,9 @@ var render = function() {
             }
           })
         ])
-      ])
+      ]),
+      _vm._v(" "),
+      _vm._m(0)
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "text-right" }, [
@@ -42357,7 +42326,16 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col col-xs-6" }, [
+      _c("div", { staticClass: "form-group m-xs-b-4" })
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {

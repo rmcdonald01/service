@@ -36,4 +36,8 @@ return [
         'stripe_api_version'  =>  env('STRIPE_API_VERSION'),
     ],
 
+    'stripe_connect' => [
+        'key' => env('STRIPE_CONNECT_KEY'),
+    ],
+
 ];
